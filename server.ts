@@ -3,14 +3,71 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 //const ws = new WebSocket("ws://www.host.com/path");
+
 const server = new WebSocket.Server({ port: 8080 }, () => {
     console.log("WebSocket server is listening on ws://localhost:8080");
 });
+class Position {
+    x: number;
+    y: number;
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+}
+let playerIdCount = 0;
+const generatePlayerId = () => {
+    const cnt = playerIdCount;
+    playerIdCount += 1;
+    return cnt;
+};
+class Player {
+    color: string = "black";
+    position: Position;
+    id: number;
+    constructor(color: string, position: Position) {
+        this.id = generatePlayerId();
+        this.color = color;
+        this.position = position;
+    }
+}
+class gameState {
+    players: Player[];
+    constructor() {
+        this.players = [];
+    }
+}
+
+interface message {
+    type: string;
+    body: string;
+}
+class playerUpdateMessage implements message {
+    type = "playerupdate";
+    body = "";
+    constructor(body: Player) {
+        this.body = JSON.stringify(body);
+    }
+}
+
+let socketMappings = new Map<WebSocket, Player>();
+const colors = ["red", "green", "blue"];
 
 server.on("error", console.error);
+let currentGameState = new gameState();
 
 server.on("connection", (socket) => {
     console.log("New client connected");
+    let player = new Player("brown", new Position(0, 0));
+    socketMappings.set(socket, player);
+    //since this is the first connection, send all of the game state to the client.
+    console.log("trying to send message to client from server...");
+    socket.send("testing. this is a new connection");
+    for (let player of socketMappings.values()) {
+        //iterate through each player and send an update containing that player's position
+        let msg = new playerUpdateMessage(player);
+        socket.send(JSON.stringify(msg));
+    }
 
     socket.on("message", (message) => {
         console.log("Received:", message);
