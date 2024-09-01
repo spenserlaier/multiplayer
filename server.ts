@@ -25,8 +25,6 @@ server.on("connection", (socket) => {
     let player = new Player("brown", new Position(0, 0));
     socketMappings.set(socket, player);
     //since this is the first connection, send all of the game state to the client.
-    console.log("trying to send message to client from server...");
-    socket.send("testing. this is a new connection");
     for (let player of socketMappings.values()) {
         //iterate through each player and send an update containing that player's position
         let msg = new playerUpdateMessage(player);
@@ -36,7 +34,7 @@ server.on("connection", (socket) => {
     socket.on("message", (message) => {
         console.log("Received:", message);
         // Echo the message back
-        socket.send(`Echo: ${message}`);
+        //socket.send(`Echo: ${message}`);
     });
 
     socket.on("close", () => {

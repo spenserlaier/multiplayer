@@ -17,8 +17,10 @@ const drawCircle = (x: number, y: number, radius: number, color: string) => {
 
 socket.addEventListener("message", (event) => {
     console.log("Message from server:", event.data);
-    if (event.data.kind && event.data.kind === "playerupdate") {
-        let playerData: Player = JSON.parse(event.data.body);
+    let data = JSON.parse(event.data);
+    if (data.kind && data.kind === "playerupdate") {
+        let playerData: Player = JSON.parse(data.body);
+        console.log("drawing circle");
         drawCircle(
             playerData.position.x,
             playerData.position.y,
