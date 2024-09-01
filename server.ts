@@ -38,7 +38,7 @@ server.on("connection", (socket) => {
     });
 
     socket.on("close", () => {
-        //TODO: remove the player associated with the particular socket. currently they keep building up 
+        //TODO: remove the player associated with the particular socket. currently they keep building up
         //even across refreshes
         console.log("Client disconnected");
     });
