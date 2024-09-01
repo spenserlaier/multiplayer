@@ -2,51 +2,15 @@ import WebSocket from "ws";
 import http from "http";
 import fs from "fs";
 import path from "path";
-//const ws = new WebSocket("ws://www.host.com/path");
+import { Player, Position, playerUpdateMessage } from "./common";
 
 const server = new WebSocket.Server({ port: 8080 }, () => {
     console.log("WebSocket server is listening on ws://localhost:8080");
 });
-class Position {
-    x: number;
-    y: number;
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-}
-let playerIdCount = 0;
-const generatePlayerId = () => {
-    const cnt = playerIdCount;
-    playerIdCount += 1;
-    return cnt;
-};
-class Player {
-    color: string = "black";
-    position: Position;
-    id: number;
-    constructor(color: string, position: Position) {
-        this.id = generatePlayerId();
-        this.color = color;
-        this.position = position;
-    }
-}
 class gameState {
     players: Player[];
     constructor() {
         this.players = [];
-    }
-}
-
-interface message {
-    type: string;
-    body: string;
-}
-class playerUpdateMessage implements message {
-    type = "playerupdate";
-    body = "";
-    constructor(body: Player) {
-        this.body = JSON.stringify(body);
     }
 }
 
