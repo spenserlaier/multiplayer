@@ -40,3 +40,20 @@ export class playerUpdateMessage implements message {
         //TODO: more compact, specific messages according to particular actions and updates
     }
 }
+
+export class KeyPress {
+    key: string;
+    isPressed: boolean;
+    constructor(key: string, isPressed: boolean) {
+        this.key = key;
+        this.isPressed = isPressed;
+    }
+}
+
+export class playerInputMessage implements message {
+    kind = "keydown";
+    body = "";
+    constructor(keyPress: KeyPress) {
+        this.body = JSON.stringify(keyPress);
+    }
+}
