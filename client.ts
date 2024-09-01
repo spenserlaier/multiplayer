@@ -1,4 +1,9 @@
-import { Player, playerUpdateMessage } from "./common";
+import {
+    KeyPress,
+    Player,
+    playerInputMessage,
+    playerUpdateMessage,
+} from "./common.js";
 const socket = new WebSocket("ws://localhost:8080");
 
 // Handle incoming messages from the server
@@ -39,3 +44,33 @@ socket.addEventListener("open", () => {
 socket.addEventListener("close", () => {
     console.log("Disconnected from server");
 });
+
+const handleKeyDown = (event: KeyboardEvent) => {
+    switch (event.key) {
+        case "w":
+        case "a":
+        case "s":
+        case "d":
+            let keyPress: KeyPress = new KeyPress(event.key, true);
+            let keyPressMessage: playerInputMessage = new playerInputMessage(
+                keyPress
+            );
+            socket.send(JSON.stringify(keyPressMessage));
+    }
+};
+const handleKeyRelease = (event: KeyboardEvent) => {
+    switch (event.key) {
+        case "w":
+        case "a":
+        case "s":
+        case "d":
+            let keyPress: KeyPress = new KeyPress(event.key, false);
+            let keyPressMessage: playerInputMessage = new playerInputMessage(
+                keyPress
+            );
+            socket.send(JSON.stringify(keyPressMessage));
+    }
+};
+
+document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyRelease);

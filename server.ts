@@ -1,10 +1,11 @@
 import WebSocket from "ws";
+import { WebSocketServer } from "ws";
 import http from "http";
 import fs from "fs";
 import path from "path";
-import { Player, Position, playerUpdateMessage } from "./common";
+import { Player, Position, playerUpdateMessage } from "./common.js";
 
-const server = new WebSocket.Server({ port: 8080 }, () => {
+const server = new WebSocketServer({ port: 8080 }, () => {
     console.log("WebSocket server is listening on ws://localhost:8080");
 });
 class gameState {
@@ -49,7 +50,9 @@ const httpServer = http.createServer((req, res) => {
         if (req.url === "/") {
             req.url = "./index.html";
         }
-        const filePath = path.join(__dirname, req.url);
+        //__dirname = process.cwd();
+        // for some reason, dirname is completely undefined
+        const filePath = path.join(process.cwd(), req.url);
         const extname = path.extname(filePath);
         let contentType = "text/plain";
         switch (extname) {
