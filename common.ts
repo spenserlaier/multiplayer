@@ -4,12 +4,28 @@ const generatePlayerId = () => {
     playerIdCount += 1;
     return cnt;
 };
+export class Vector {
+    x: number;
+    y: number;
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+}
+export const computeVectorMagnitude = (v: Vector) => {
+    return Math.sqrt(v.x ** 2 + v.y ** 2);
+};
+export const normalizeVector = (v: Vector) => {
+    let mag = computeVectorMagnitude(v);
+    return new Vector(v.x / mag, v.y / mag);
+};
+
 export class Player {
     color: string = "black";
     position: Position;
     id: number;
     size: number = 5;
-    direction: number = 0;
+    direction: Vector = new Vector(0, 0);
     speed: number = 0;
     constructor(color: string, position: Position) {
         this.id = generatePlayerId();
@@ -29,14 +45,14 @@ export class Position {
 
 export interface message {
     kind: string;
-    body: string;
+    body: object;
 }
 
 export class playerUpdateMessage implements message {
     kind = "playerupdate";
-    body = "";
-    constructor(body: Player) {
-        this.body = JSON.stringify(body);
+    body: Player;
+    constructor(player: Player) {
+        this.body = player;
         //TODO: more compact, specific messages according to particular actions and updates
     }
 }
@@ -51,9 +67,9 @@ export class KeyPress {
 }
 
 export class playerInputMessage implements message {
-    kind = "keydown";
-    body = "";
+    kind = "keypress";
+    body: KeyPress;
     constructor(keyPress: KeyPress) {
-        this.body = JSON.stringify(keyPress);
+        this.body = keyPress;
     }
 }

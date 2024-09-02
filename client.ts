@@ -24,7 +24,7 @@ socket.addEventListener("message", (event) => {
     console.log("Message from server:", event.data);
     let data = JSON.parse(event.data);
     if (data.kind && data.kind === "playerupdate") {
-        let playerData: Player = JSON.parse(data.body);
+        let playerData: Player = data.body;
         console.log("drawing circle");
         drawCircle(
             playerData.position.x,
