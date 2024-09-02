@@ -22,15 +22,21 @@ const drawPlayer = (player: Player) => {
 };
 
 socket.addEventListener("message", (event) => {
-    console.log("Message from server:", event.data);
+    //console.log("Message from server:", event.data);
     let data = JSON.parse(event.data);
     if (data.kind) {
         switch (data.kind) {
             case "playerupdate":
                 let player: Player = data.body;
                 idsToPlayers.set(player.id, player);
-                console.log("drawing circle");
                 drawPlayer(player);
+                break;
+            case "playerdisconnect":
+                let playerId = data.body.id;
+                console.log("received player id: ", playerId);
+                if (idsToPlayers.get(playerId)) {
+                    idsToPlayers.delete(playerId);
+                }
                 break;
         }
     }

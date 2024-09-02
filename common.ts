@@ -57,6 +57,16 @@ export class playerUpdateMessage implements message {
     }
 }
 
+export class playerDisconnectMessage implements message {
+    kind = "playerdisconnect";
+    body: { id: null | number };
+    constructor(player: Player) {
+        this.body = {
+            id: player.id,
+        };
+    }
+}
+
 export class KeyPress {
     key: string;
     isPressed: boolean;

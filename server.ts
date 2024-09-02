@@ -8,6 +8,7 @@ import {
     Player,
     Position,
     normalizeVector,
+    playerDisconnectMessage,
     playerInputMessage,
     playerUpdateMessage,
 } from "./common.js";
@@ -85,9 +86,14 @@ server.on("connection", (socket) => {
     });
 
     socket.on("close", () => {
-        //TODO: remove the player associated with the particular socket. currently they keep building up
-        //even across refreshes
         if (socketsToPlayers.get(socket)) {
+            const player = socketsToPlayers.get(socket)!;
+            const msg: playerDisconnectMessage = new playerDisconnectMessage(
+                player
+            );
+            for (let socket of server.clients) {
+                socket.send(JSON.stringify(msg));
+            }
             socketsToPlayers.delete(socket);
         }
         console.log("Client disconnected");
