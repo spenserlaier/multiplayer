@@ -33,10 +33,13 @@ server.on("connection", (socket) => {
     let player = new Player("brown", new Position(0, 0));
     socketsToPlayers.set(socket, player);
     //since this is the first connection, send all of the game state to the client.
-    for (let player of socketsToPlayers.values()) {
-        //iterate through each player and send an update containing that player's position
-        let msg = new playerUpdateMessage(player);
-        socket.send(JSON.stringify(msg));
+    for (let socket of server.clients) {
+        //TODO: this could most likely be optimized
+        for (let player of socketsToPlayers.values()) {
+            //iterate through each player and send an update containing that player's position
+            let msg = new playerUpdateMessage(player);
+            socket.send(JSON.stringify(msg));
+        }
     }
 
     socket.on("message", (message) => {
@@ -84,6 +87,9 @@ server.on("connection", (socket) => {
     socket.on("close", () => {
         //TODO: remove the player associated with the particular socket. currently they keep building up
         //even across refreshes
+        if (socketsToPlayers.get(socket)) {
+            socketsToPlayers.delete(socket);
+        }
         console.log("Client disconnected");
     });
 });
@@ -92,8 +98,7 @@ const serverTick = () => {
     let currentTickTime = Date.now();
     let deltaTime = currentTickTime - prevTickTime;
     prevTickTime = currentTickTime;
-    for (let socket of server.clients) {
-        let player = socketsToPlayers.get(socket)!;
+    for (let player of socketsToPlayers.values()) {
         if (player.direction.x !== 0 || player.direction.y !== 0) {
             const normalizedDirection = normalizeVector(player.direction);
             player.position.x +=
@@ -101,8 +106,10 @@ const serverTick = () => {
             player.position.y +=
                 (normalizedDirection.y * PLAYER_SPEED) / deltaTime;
         }
-        const msg: playerUpdateMessage = new playerUpdateMessage(player);
-        socket.send(JSON.stringify(msg));
+        for (let socket of server.clients) {
+            const msg: playerUpdateMessage = new playerUpdateMessage(player);
+            socket.send(JSON.stringify(msg));
+        }
     }
 };
 let tickInterval = 100;

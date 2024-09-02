@@ -12,7 +12,7 @@ let canvas: HTMLCanvasElement = document.getElementById(
 ) as HTMLCanvasElement;
 let ctx = canvas.getContext("2d")!;
 
-let idToPlayer: Map<number, Player> = new Map();
+let idsToPlayers: Map<number, Player> = new Map();
 const drawPlayer = (player: Player) => {
     ctx.beginPath(); // Start a new path
     ctx.arc(player.position.x, player.position.y, player.size, 0, Math.PI * 2); // Draw a circle
@@ -28,7 +28,7 @@ socket.addEventListener("message", (event) => {
         switch (data.kind) {
             case "playerupdate":
                 let player: Player = data.body;
-                idToPlayer.set(player.id, player);
+                idsToPlayers.set(player.id, player);
                 console.log("drawing circle");
                 drawPlayer(player);
                 break;
@@ -81,14 +81,14 @@ const drawPlayers = (players: Player[]) => {
 };
 let prevTick = new Date().getTime();
 const clientTick = () => {
-    drawPlayers(Array.from(idToPlayer.values()));
+    drawPlayers(Array.from(idsToPlayers.values()));
 };
 const tickInterval = 10;
 setInterval(clientTick, tickInterval);
 
 document.addEventListener("keydown", handleKeyDown);
 //TODO: normally, a key that is pressed and held down will continue sending signals.
-//however, if another key is pressed while one is already pressed, that key will 
+//however, if another key is pressed while one is already pressed, that key will
 //override the original. This means that, when moving, if one direction is pressed,
 //then the opposite direction is pressed (while the first is still held down), and
 //the opposite direction is released, the player will simply stop, even though
