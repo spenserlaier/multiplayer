@@ -21,10 +21,10 @@ export const normalizeVector = (v: Vector) => {
 };
 
 export class Player {
-    color: string = "black";
+    color: string;
     position: Position;
     id: number;
-    size: number = 5;
+    size: number = 20;
     direction: Vector = new Vector(0, 0);
     speed: number = 0;
     constructor(color: string, position: Position) {

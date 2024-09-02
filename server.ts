@@ -12,7 +12,7 @@ import {
     playerInputMessage,
     playerUpdateMessage,
 } from "./common.js";
-const PLAYER_SPEED = 200;
+const PLAYER_SPEED = 800;
 
 const server = new WebSocketServer({ port: 8080 }, () => {
     console.log("WebSocket server is listening on ws://localhost:8080");
@@ -24,14 +24,17 @@ class gameState {
     }
 }
 let socketsToPlayers = new Map<WebSocket, Player>();
-const colors = ["red", "green", "blue"];
+const colors = ["red", "green", "blue", "yellow", "purple", "pink"];
 
 server.on("error", console.error);
 let currentGameState = new gameState();
 
 server.on("connection", (socket) => {
     console.log("New client connected");
-    let player = new Player("brown", new Position(0, 0));
+    let player = new Player(
+        colors[Math.floor(Math.random() * colors.length)],
+        new Position(0, 0)
+    );
     socketsToPlayers.set(socket, player);
     //since this is the first connection, send all of the game state to the client.
     for (let socket of server.clients) {
