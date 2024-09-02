@@ -87,4 +87,10 @@ const tickInterval = 10;
 setInterval(clientTick, tickInterval);
 
 document.addEventListener("keydown", handleKeyDown);
+//TODO: normally, a key that is pressed and held down will continue sending signals.
+//however, if another key is pressed while one is already pressed, that key will 
+//override the original. This means that, when moving, if one direction is pressed,
+//then the opposite direction is pressed (while the first is still held down), and
+//the opposite direction is released, the player will simply stop, even though
+//one direction is still held down.
 document.addEventListener("keyup", handleKeyRelease);
