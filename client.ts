@@ -12,10 +12,11 @@ let canvas: HTMLCanvasElement = document.getElementById(
 ) as HTMLCanvasElement;
 let ctx = canvas.getContext("2d")!;
 
-const drawCircle = (x: number, y: number, radius: number, color: string) => {
+let idToPlayer: Map<number, Player> = new Map();
+const drawPlayer = (player: Player) => {
     ctx.beginPath(); // Start a new path
-    ctx.arc(x, y, radius, 0, Math.PI * 2); // Draw a circle
-    ctx.fillStyle = color; // Set the fill color
+    ctx.arc(player.position.x, player.position.y, player.size, 0, Math.PI * 2); // Draw a circle
+    ctx.fillStyle = player.color; // Set the fill color
     ctx.fill(); // Fill the circle with the color
     ctx.closePath(); // Close the path
 };
@@ -23,15 +24,15 @@ const drawCircle = (x: number, y: number, radius: number, color: string) => {
 socket.addEventListener("message", (event) => {
     console.log("Message from server:", event.data);
     let data = JSON.parse(event.data);
-    if (data.kind && data.kind === "playerupdate") {
-        let playerData: Player = data.body;
-        console.log("drawing circle");
-        drawCircle(
-            playerData.position.x,
-            playerData.position.y,
-            playerData.size,
-            playerData.color
-        );
+    if (data.kind) {
+        switch (data.kind) {
+            case "playerupdate":
+                let player: Player = data.body;
+                idToPlayer.set(player.id, player);
+                console.log("drawing circle");
+                drawPlayer(player);
+                break;
+        }
     }
 });
 
@@ -71,6 +72,19 @@ const handleKeyRelease = (event: KeyboardEvent) => {
             socket.send(JSON.stringify(keyPressMessage));
     }
 };
+
+const drawPlayers = (players: Player[]) => {
+    ctx.reset();
+    for (let player of players) {
+        drawPlayer(player);
+    }
+};
+let prevTick = new Date().getTime();
+const clientTick = () => {
+    drawPlayers(Array.from(idToPlayer.values()));
+};
+const tickInterval = 10;
+setInterval(clientTick, tickInterval);
 
 document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyRelease);
